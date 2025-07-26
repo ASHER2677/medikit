@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediKit E-commerce</title>
+  <style>
+    .modal {
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal .close {
+  float: right;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+    .card {
+  background: #ffffff; /* full white background */
+  opacity: 1; /* fully opaque */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+    .intro {
+  background: rgba(5, 240, 135, 0.8);
+  padding: 2rem;
+  margin: 2rem auto;
+  border-radius: 15px;
+  max-width: 800px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.intro h2 {
+  color: #007c91;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.intro p {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+    nav a {
+  background-color: #00bcd4;
+  padding: 8px 14px;
+  border-radius: 20px;
+  color: rgba(9, 229, 196, 0.907);
+  margin: 0 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+nav a:hover {
+  background-color: #007c91;
+  transform: scale(1.05);
+}
+
+    body {
+  position: relative;
+  z-index: 0;
+  min-height: 100vh;
+  background: transparent;
+  backdrop-filter: blur(0px);
+}
+
+.container, nav, .hero, .card {
+  position: relative;
+  z-index: 1;
+}
+
+    body {
+      background-image: url('https://cdn.vectorstock.com/i/2000v/11/36/cyan-low-poly-polygon-background-vector-16271136.avif');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    nav { background: #00bcd4; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s ease; }
+    nav a { color: white; margin: 0 0.5rem; text-decoration: none; transition: transform 0.3s ease; }
+    nav a:hover { text-decoration: underline; transform: scale(1.05); }
+    .container { padding: 1rem; animation: fadeIn 0.5s ease-in; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .btn { background: #007BFF; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease; }
+    .btn:hover { background: #0097a7; transform: scale(1.05); }
+    input, button { display: block; width: 100%; margin: 0.5rem 0; padding: 0.5rem; }
+    .qty { display: inline-block; width: 40px; text-align: center; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    .hero {
+      background: linear-gradient(135deg, #b2ebf2, #e0f7fa);
+      padding: 3rem 1rem;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) {
+      nav { flex-direction: column; align-items: flex-start; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  
+<!-- Animated Background Canvas -->
+<div id="finisher-background" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;"></div>
+
+<nav>
+  <div><strong>MediKit</strong></div>
+  <div>
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('blog')">Blog</a>
+    <a href="#" onclick="showPage('cart')">Cart</a>
+    <a href="#" onclick="showPage('login')">Login</a>
+    <a href="#" onclick="showPage('register')">Register</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div id="home" class="fade-in">
+    <div class="hero">
+      <h1>Welcome to MediKit</h1>
+      <p>Your one-stop shop for trusted healthcare essentials. Fast delivery, affordable prices, and everything you need to stay safe and healthy — all at your fingertips.</p>
+      <button class="btn" onclick="document.getElementById('home').scrollIntoView({ behavior: 'smooth' });">Shop Now</button>
+    </div>
+    <div class="intro">
+  <h2>Why Choose MediKit?</h2>
+  <p>
+    At MediKit, we’re committed to making healthcare more accessible and affordable for everyone.  
+    Whether you're stocking up on essentials or building your home first-aid kit, we offer high-quality medical products delivered right to your doorstep.  
+    Trusted by thousands of families, our store ensures safety, speed, and savings — all in one place.
+  </p>
+</div>
+
+
+    <h2>Products</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Thermometer</h3>
+        <p>$10</p>
+        <button class="btn" onclick="addToCart('Thermometer', 10)">Add to Cart</button>
+      </div>
+      <div class="card">
+        <h3>First Aid Kit</h3>
+        <p>$25</p>
+        <button class="btn" onclick="addToCart('First Aid Kit', 25)">Add to Cart</button>
+      </div>
+      <div class="card">
+        <h3>Face Mask</h3>
+        <p>$5</p>
+        <button class="btn" onclick="addToCart('Face Mask', 5)">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  
+
+
+ <div id="login" class="fade-in" style="display: none;">
+    <h2>Login</h2>
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <button class="btn">Login</button>
+  </div>
+
+  <div id="register" class="fade-in" style="display: none;">
+    <h2>Register</h2>
+    <input type="text" placeholder="Name">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <button class="btn">Register</button>
+  </div>
+
+  <div id="cart" class="fade-in" style="display: none;">
+    <h2>Your Cart</h2>
+    <ul id="cart-items"></ul>
+    <h3 id="total">Total: $0</h3>
+    <button class="btn" style="width:120px;" onclick="proceedToPayment()">Checkout</button>
+    
+
+  </div>
+
+  <div id="blog" class="fade-in" style="display: none;">
+  <h2>Health Blog</h2>
+  <div class="card" onclick="openModal('firstAid')">
+    <h3>How to Use a First Aid Kit</h3>
+    <p>Learn the basics of first aid...</p>
+  </div>
+  <div class="card" onclick="openModal('maskBenefits')">
+    <h3>Benefits of Wearing a Mask</h3>
+    <p>Masks help prevent the spread...</p>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="blogModal" class="modal" style="display: none;">
+  <div class="modal-content" id="modalContent">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle">Title</h3>
+    <p id="modalBody">Full content will go here.</p>
+  </div>
+</div>
+
+
+  <div id="payment" class="fade-in" style="display: none;">
+    <h2>Payment</h2>
+    <p>Total Amount: <strong id="payment-total"></strong></p>
+    <input type="text" placeholder="Card Number">
+    <input type="text" placeholder="Expiry Date">
+    <input type="text" placeholder="CVV">
+    <button class="btn" onclick="completePayment()">Pay</button>
+  </div>
+
+  <div id="summary" class="fade-in" style="display: none;">
+    <h2>Order Summary</h2>
+    <ul id="summary-items"></ul>
+    <h3 id="summary-total"></h3>
+    <p>Thank you for your purchase!</p>
+    <button class="btn" onclick="showPage('home')">Return Home</button>
+  </div>
+</div>
+
+<script>
+  function openModal(topic) {
+  const modal = document.getElementById("blogModal");
+  const title = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+
+  if (topic === "firstAid") {
+    title.textContent = "How to Use a First Aid Kit";
+    body.textContent = "A basic first aid kit should include antiseptic wipes, bandages, scissors, and gloves. Clean the wound gently, stop the bleeding, and cover it properly...";
+  } else if (topic === "maskBenefits") {
+    title.textContent = "Benefits of Wearing a Mask";
+    body.textContent = "Wearing a mask helps reduce transmission of airborne diseases like flu or COVID-19. It protects both the wearer and those around them...";
+  }
+
+  modal.style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("blogModal").style.display = "none";
+}
+
+
+
+  const cart = [];
+
+  function showPage(pageId) {
+    const pages = ['home', 'login', 'register', 'cart', 'blog', 'payment', 'summary'];
+    pages.forEach(id => {
+      const el = document.getElementById(id);
+      el.style.display = id === pageId ? 'block' : 'none';
+      if (id === pageId) {
+        el.classList.remove('fade-in');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('fade-in');
+      }
+    });
+    if (pageId === 'cart') updateCart();
+  }
+
+  function addToCart(item, price) {
+    const existing = cart.find(p => p.item === item);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ item, price, qty: 1 });
+    }
+    alert(`${item} added to cart.`);
+  }
+
+  function updateCart() {
+    const cartItems = document.getElementById('cart-items');
+    const total = document.getElementById('total');
+    cartItems.innerHTML = '';
+    let sum = 0;
+
+    cart.forEach(({ item, price, qty }, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${item} - $${price} x <input type="number" class="qty" value="${qty}" min="1" onchange="changeQty(${index}, this.value)">
+        <button class="btn" style="background:red;" onclick="removeItem(${index})">Remove</button>
+      `;
+      cartItems.appendChild(li);
+      sum += price * qty;
+    });
+    total.textContent = `Total: $${sum}`;
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    updateCart();
+  }
+
+  function changeQty(index, value) {
+    const qty = parseInt(value);
+    if (qty > 0) {
+      cart[index].qty = qty;
+      updateCart();
+    }
+  }
+
+  function proceedToPayment() {
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+    const totalAmount = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    document.getElementById('payment-total').textContent = `$${totalAmount}`;
+    showPage('payment');
+  }
+
+  function completePayment() {
+    const summaryItems = document.getElementById('summary-items');
+    const summaryTotal = document.getElementById('summary-total');
+    summaryItems.innerHTML = '';
+    let sum = 0;
+    cart.forEach(({ item, price, qty }) => {
+      const li = document.createElement('li');
+      li.textContent = `${item} - $${price} x ${qty}`;
+      summaryItems.appendChild(li);
+      sum += price * qty;
+    });
+    summaryTotal.textContent = `Total Paid: $${sum}`;
+    cart.length = 0;
+    showPage('summary');
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/finisher-header/dist/finisher-header.min.js"></script>
+<script>
+new FinisherHeader({
+  "target": "finisher-background",
+  "count": 7,
+  "size": {
+    "min": 500,
+    "max": 1300,
+    "pulse": 0.3
+  },
+  "speed": {
+    "x": {
+      "min": 0,
+      "max": 0.4
+    },
+    "y": {
+      "min": 0,
+      "max": 0.4
+    }
+  },
+  "colors": {
+    "background": "#e0f7fa",
+    "particles": ["#00bcd4", "#4dd0e1", "#b2ebf2"]
+  },
+  "blending": "lighten",
+  "opacity": {
+    "center": 0.1,
+    "edge": 0.05
+  },
+  "skew": 0,
+  "shapes": ["c"]
+});
+</script>
+
+
+</body>
+</html>
+
+
